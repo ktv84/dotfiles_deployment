@@ -3,6 +3,7 @@
   hosts: all
   roles:
     - { role: vim, tags: "vim, ws01" }
+    - { role: nvim, tags: ",neovim,nvim, ws01" }
     - { role: fishshell, tags: "fishshell, ws01" }
     - { role: fonts, tags: "fonts, ws01" }
     - { role: termite, tags: "termite, ws01" }
