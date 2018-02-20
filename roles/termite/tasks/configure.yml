@@ -1,10 +1,18 @@
 ---
+- name: Create termite directory
+  file:
+    path: "{{ ansible_user_dir }}/.config/termite"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+
 - name: Install termite configuration file
   copy:
     src: config
-    dest: {{ ansible_user_dir }}/.config/termite/config
+    dest: "{{ ansible_user_dir }}/.config/termite/config"
+    owner: "{{ ansible_user_id }}"
 
 - name: Install gtk configuration file (padding in terminal)
   copy:
     src: gtk.css
-    dest: {{ ansible_user_dir }}/.config/gtk-3.0/gtk.css
+    dest: "{{ ansible_user_dir }}/.config/gtk-3.0/gtk.css"
+    owner: "{{ ansible_user_id }}"
