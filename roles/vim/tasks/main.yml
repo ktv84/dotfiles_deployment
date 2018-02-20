@@ -1,0 +1,29 @@
+---
+- name: Set vim as default editor
+  command: update-alternatives --set editor /usr/bin/vim.basic
+  become: yes
+  become_user: root
+
+- name: Create vim config directories
+  file: 
+    path: "{{ ansible_user_dir }}/{{ item }}"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0777
+    state: directory
+  with_items:
+    - .vim
+    - .vim/bundle
+    - .vim/autoload
+
+- name: Copy .vimrc
+  copy:
+    src: vimrc
+    dest: "{{ ansible_user_dir }}/.vimrc"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+
+- name: Rsync vim config and plugins (configuration)
+  synchronize:
+    src: vim/
+    dest: "{{ ansible_user_dir }}/.vim"

@@ -1,0 +1,46 @@
+source $HOME/.vim/plug.vim
+filetype plugin indent on
+
+syntax on
+set background=dark
+"colorscheme industry
+
+set laststatus=2
+set number
+
+set tabstop=2
+set softtabstop=0 noexpandtab
+set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
+
+" Disable visual bell in Terminal
+set visualbell t_vb=
+set noeb vb t_vb=
+
+" Sets italic, if supported
+set t_ZH=[3m
+set t_ZR=[23m
+
+" Keeps at least 3 lines above the cursor
+set scrolloff=3
+
+"" Set modelines off due to possible security flaws
+set modelines=0
+set nomodeline
+
+" Sets vim to use a ruler which shows the
+" " line, column number.
+set ruler
+set number
+set relativenumber
+
+" Sets the title to the filename
+set title
+set titleold="Terminal"
+set titlestring=vim\ \-\ %F
+
+set statusline=%F%m%r%h%w%=%y\ [%l:%c\/%L]
+
+source $HOME/.vim/keys.vim
+
+" Add plugins to &runtimepath
+call plug#end()
