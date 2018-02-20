@@ -1,0 +1,16 @@
+---
+- name: Install neovim
+  apt:
+    name: neovim
+    state: latest
+
+- name: Create neovim config directory
+  file:
+    path: "{{ ansible_user_dir }}/.config/nvim"
+    owner: "{{ ansible_user_id }}"
+
+- name: Install neovim config
+  copy:
+    src: init.vim
+    dest: "{{ ansible_user_dir }}/.config/nvim/init.vim"
+    owner: "{{ ansible_user_id }}"
