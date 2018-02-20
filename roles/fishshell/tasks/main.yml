@@ -1,0 +1,68 @@
+---
+- name: Install fish shell repository
+  copy: src=fish.list dest=/etc/apt/sources.list.d/fish.list
+  become: yes
+  become_user: root
+
+- name: Add fish shell apt signing key
+  apt_key: url=https://download.opensuse.org/repositories/shells:fish:release:2/Debian_9.0/Release.key state=present
+  become: yes
+  become_user: root
+
+- name: Install fish shell
+  apt:
+    name: fish
+    update_cache: yes
+    state: latest
+  become: yes
+  become_user: root
+
+- block:
+  - name: Install fish shell as default shell
+    user: 
+      name: "{{ ansible_user_id }}"
+      shell: /usr/bin/fish
+    become: yes
+    become_user: root
+  rescue:
+  - name: Install fish shell in .bashrc
+    lineinfile:
+      name: "{{ ansible_user_dir }}/.bashrc"
+      state: present
+      regexp: '^/usr/bin/fish'
+      line: '/usr/bin/fish && exit'
+  always:
+  - name: Get oh my fish installer
+    get_url:
+      url: "https://github.com/oh-my-fish/oh-my-fish/raw/master/bin/install"
+      dest: "{{ ansible_user_dir }}/install"
+      mode: 0777
+
+  - name: Check if omf is installed
+    stat:
+      path: "{{ ansible_user_dir}}/.local/share/omf"
+    register: omf_installed
+
+  - name: Install oh my fish from installer file
+    command: /usr/bin/fish {{ ansible_user_dir }}/install --noninteractive
+    become: yes
+    become_user: "{{ ansible_user_id }}"
+    when: omf_installed.stat.exists == False
+
+  - name: Remove oh my fish install file
+    file:
+      path: "{{ ansible_user_dir }}/install"
+      state: absent
+
+  - name: Check if bobthefish theme is installed
+    stat:
+      path: "{{ ansible_user_dir }}/.local/share/omf/themes/bobthefish"
+    register: bobthefish_installed
+
+  - name: Install bobthefish by using oh my fish installer
+    shell: omf install bobthefish
+    become: yes
+    become_user: "{{ ansible_user_id }}"
+    args:
+      executable: /usr/bin/fish
+    when: bobthefish_installed.stat.exists == False
