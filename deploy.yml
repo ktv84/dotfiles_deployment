@@ -7,3 +7,4 @@
     - { role: fishshell, tags: "fishshell, ws01" }
     - { role: fonts, tags: "fonts, ws01" }
     - { role: termite, tags: "termite, ws01" }
+    - { role: i3, tags: "i3, ws01" }

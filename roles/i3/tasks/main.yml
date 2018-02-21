@@ -1,0 +1,100 @@
+---
+- name: Install i3 dependecies
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - i3blocks
+    - libanyevent-i3-perl
+    - python3-pip
+    - rofi
+  become: yes
+  become_user: root
+
+- name: Install i3
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - i3-wm
+    - i3
+  become: yes
+  become_user: root
+
+- name: Install i3 gaps dependecies
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - libxcb-keysyms1-dev
+    - libpango1.0-dev
+    - libxcb-util0-dev
+    - xcb
+    - libxcb1-dev
+    - libxcb-icccm4-dev
+    - libyajl-dev
+    - libev-dev
+    - libxcb-xkb-dev
+    - libxcb-cursor-dev
+    - libxkbcommon-dev
+    - libxcb-xinerama0-dev
+    - libxkbcommon-x11-dev
+    - libstartup-notification0-dev
+    - libxcb-randr0-dev
+    - libxcb-xrm0
+    - libxcb-xrm-dev
+  become: yes
+  become_user: root
+
+- name: Get i3 gaps from github (i3gaps)
+  git:
+    repo: 'https://github.com/Airblader/i3.git'
+    dest: /tmp/i3-gaps
+
+- name: Run autoreconf and recreate build directory (i3gaps)
+  shell: autoreconf --force --install && rm -rf build/ && mkdir -p build
+  args:
+    chdir: /tmp/i3-gaps
+    executable: /bin/bash
+
+- name: Run configure (i3gaps)
+  command: ../configure --prefix=/usr --sysconfdir=/etc --disable-sanitizers
+  args:
+    chdir: /tmp/i3-gaps/build
+
+- name: Run make (i3gaps)
+  make:
+    chdir: /tmp/i3-gaps/build
+
+- name: Run make install (i3gaps)
+  make:
+    chdir: /tmp/i3-gaps/build
+    target: install
+  become: yes
+  become_user: root
+
+- name: Create i3 config directory
+  file:
+    path: "{{ ansible_user_dir }}/.config/i3"
+    owner: "{{ ansible_user_id }}"
+    state: directory
+
+- name: Get i3 dotfiles from github
+  git:
+    repo: 'https://github.com/ktv84/dotfiles_i3wm.git'
+    dest: "{{ ansible_user_dir }}/.config/i3"
+
+- name: Copy Xresources file
+  copy:
+    src: Xresources
+    dest: "{{ ansible_user_dir }}/.Xresources"
+    owner: "{{ ansible_user_id }}"
+
+- name: Install i3ipc for workspace switcher (and ipc scripts)
+  pip:
+    name: i3ipc
+    executable: pip3
+  become: yes
+  become_user: root
