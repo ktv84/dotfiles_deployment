@@ -4,6 +4,14 @@
   become: yes
   become_user: root
 
+- name: Installing curl (used in .vimrc to setup plug)
+  apt:
+    name: curl
+    update_cache: yes
+    state: installed
+  become: yes
+  become_user: root
+
 - name: Create vim config directories
   file: 
     path: "{{ ansible_user_dir }}/{{ item }}"
